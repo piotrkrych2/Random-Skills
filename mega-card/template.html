@@ -1,0 +1,337 @@
+<meta charset="utf-8">
+<title>Pajęczyna MEGA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600&display=swap">
+<style>
+  :root {
+    --ground: #15120f;
+    --panel-ink: #ede3d6;
+    --muted: #9c8e7e;
+    --grid: #3a322b;
+    --bronze-hi: #e7b384;
+    --bronze: #b57a4a;
+    --bronze-lo: #6a3e22;
+    --card-ink: #2b170a;
+    --line: #e0a66c;
+    --good: #5bbf6a;
+    --mid: #e3b341;
+    --low: #e0634a;
+    --cond: "Barlow Condensed", "Arial Narrow", "Roboto Condensed", sans-serif;
+    --body: "Barlow", "Helvetica Neue", Arial, sans-serif;
+  }
+  html { background: var(--ground); }
+  body {
+    background: var(--ground);
+    color: var(--panel-ink);
+    font-family: var(--body);
+    font-size: 15px;
+    line-height: 1.5;
+    padding-inline: 40px;
+    padding-block: 36px;
+  }
+  .wrap {
+    max-width: 1520px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 440px 1fr;
+    gap: 48px;
+    align-items: start;
+  }
+  .left { display: flex; flex-direction: column; gap: 26px; }
+  .eyebrow {
+    font-family: var(--cond);
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--line);
+    margin: 0 0 6px;
+  }
+  h1 {
+    font-family: var(--cond);
+    font-weight: 800;
+    font-size: 46px;
+    line-height: 1;
+    letter-spacing: .01em;
+    margin: 0 0 10px;
+    text-wrap: balance;
+  }
+  .sub { color: var(--muted); margin: 0; max-width: 42ch; }
+
+  /* FUT-style card; the tier class swaps the metal */
+  .card {
+    --m-hi: var(--bronze-hi);
+    --m-mid: var(--bronze);
+    --m-deep: #8c5530;
+    --m-lo: var(--bronze-lo);
+    position: relative;
+    width: 420px;
+    max-width: 100%;
+    padding: 38px 30px 78px;
+    color: var(--card-ink);
+    background:
+      radial-gradient(120% 70% at 20% 0%, rgba(255, 236, 210, .45), transparent 60%),
+      linear-gradient(160deg, var(--m-hi) 0%, var(--m-mid) 38%, var(--m-deep) 70%, var(--m-lo) 100%);
+    clip-path: polygon(0 5%, 9% 0, 91% 0, 100% 5%, 100% 87%, 72% 95%, 50% 100%, 28% 95%, 0 87%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+  .card.silver { --m-hi: #f1f1ee; --m-mid: #c3c4c2; --m-deep: #9a9c9b; --m-lo: #6f7272; }
+  .card.gold { --m-hi: #fbe7a1; --m-mid: #e2c05a; --m-deep: #c39a2f; --m-lo: #8a6a1c; }
+  .card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(115deg, transparent 38%, rgba(255, 243, 226, .22) 47%, transparent 56%);
+    pointer-events: none;
+  }
+  .card-top {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 78px 1fr;
+    align-items: start;
+  }
+  .rating { display: flex; flex-direction: column; align-items: center; font-family: var(--cond); padding-top: 4px; }
+  .ovr { font-weight: 800; font-size: 76px; line-height: .9; font-variant-numeric: tabular-nums; }
+  .pos { font-weight: 700; font-size: 26px; line-height: 1.1; }
+  .tier {
+    margin-top: 8px;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: .18em;
+    padding: 2px 6px 1px;
+    border: 1.5px solid currentColor;
+    opacity: .8;
+  }
+  .hex { width: 100%; height: auto; display: block; }
+  .name {
+    font-family: var(--cond);
+    font-weight: 800;
+    font-size: 42px;
+    line-height: 1;
+    letter-spacing: .06em;
+    padding-bottom: 10px;
+    border-bottom: 1.5px solid rgba(43, 23, 10, .35);
+    width: 78%;
+    text-align: center;
+    overflow-wrap: anywhere;
+  }
+  .stats { display: grid; grid-template-columns: auto auto; }
+  .stats .col { display: flex; flex-direction: column; gap: 4px; padding-inline: 26px; }
+  .stats .col + .col { border-left: 1.5px solid rgba(43, 23, 10, .35); }
+  .stat { font-family: var(--cond); font-size: 28px; line-height: 1.15; display: flex; gap: 10px; align-items: baseline; }
+  .stat b { font-weight: 800; font-variant-numeric: tabular-nums; min-width: 1.3em; }
+  .stat span { font-weight: 500; }
+  .card-foot {
+    font-family: var(--cond);
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    opacity: .75;
+  }
+
+  .key { display: grid; grid-template-columns: 1fr; gap: 4px; margin: 0; }
+  .key div { display: flex; gap: 10px; align-items: baseline; }
+  .key dt { font-family: var(--cond); font-weight: 700; color: var(--line); letter-spacing: .06em; min-width: 2.4em; }
+  .key dd { margin: 0; color: var(--panel-ink); }
+  .legend { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 14px; color: var(--muted); }
+  .legend span { display: inline-flex; align-items: center; gap: 7px; }
+  .legend i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  .note { color: var(--muted); font-size: 13px; margin: 0; max-width: 56ch; }
+
+  .radar { width: 100%; height: auto; display: block; }
+  .radar text { font-family: var(--cond); }
+  .radar circle.pt:hover { r: 8; }
+
+  @media (max-width: 1000px) {
+    body { padding-inline: 16px; padding-block: 24px; }
+    .wrap { grid-template-columns: 1fr; gap: 32px; }
+    .card { margin-inline: auto; }
+    .radar-box { overflow-x: auto; }
+    .radar { min-width: 640px; }
+  }
+</style>
+
+<div class="wrap">
+  <section class="left">
+    <header>
+      <p class="eyebrow" id="eyebrow">MEGA Assessment</p>
+      <h1>Pajęczyna umiejętności</h1>
+      <p class="sub">24 cechy pracy z agentami, zebrane w 6 statystyk jak na karcie FUT. Skala 0-100 to odsetek epizodów, w których dana praktyka wystąpiła.</p>
+    </header>
+
+    <div class="card" id="card">
+      <div class="card-top">
+        <div class="rating">
+          <div class="ovr" id="ovr"></div>
+          <div class="pos">ORC</div>
+          <div class="tier" id="tier"></div>
+        </div>
+        <svg class="hex" id="hex" viewBox="0 0 300 262" role="img" aria-label="Sześciokątny wykres 6 statystyk"></svg>
+      </div>
+      <div class="name" id="name"></div>
+      <div class="stats" id="stats"></div>
+      <div class="card-foot" id="foot"></div>
+    </div>
+
+    <dl class="key" id="key"></dl>
+
+    <div class="legend">
+      <span><i style="background: var(--good)"></i>70+ mocne</span>
+      <span><i style="background: var(--mid)"></i>50-69 średnie</span>
+      <span><i style="background: var(--low)"></i>poniżej 50 do poprawy</span>
+    </div>
+
+    <p class="note">Wynik cechy = (applied + declined) / eligible. Świadome pominięcie (declined) liczy się na plus. Ocena ogólna to średnia z 24 cech. ORC = orkiestrator agentów. Skan widzi tylko to, co padło w zapisie sesji, więc przy zwięzłych promptach cechy "słowne" (ograniczenia, prawa decyzyjne) wychodzą zaniżone.</p>
+  </section>
+
+  <section class="radar-box">
+    <svg class="radar" id="radar" viewBox="0 0 1060 1000" role="img" aria-label="Pajęczyna 24 cech, skala 0-100"></svg>
+  </section>
+</div>
+
+<script>
+  /*__DATA__*/
+
+  const GROUPS = [
+    { code: "INT", name: "Intencja", ids: ["T01", "T02", "T05", "T06"] },
+    { code: "KTX", name: "Kontekst", ids: ["T03", "T04", "T09", "T10", "T11", "T12"] },
+    { code: "DIA", name: "Diagnoza", ids: ["T07", "T08", "T13"] },
+    { code: "DEL", name: "Delegacja", ids: ["T14", "T15", "T16", "T17", "T19", "T20"] },
+    { code: "STR", name: "Sterowanie", ids: ["T18", "T21", "T22"] },
+    { code: "WER", name: "Weryfikacja", ids: ["T23", "T24"] },
+  ];
+
+  const NAMES = {
+    T01: "Jasność intencji",
+    T02: "Poziom ramowania",
+    T03: "Model stanu agenta",
+    T04: "Kotwiczenie kontekstu",
+    T05: "Precyzja ograniczeń",
+    T06: "Sprawdzalna akceptacja",
+    T07: "Najpierw zrozumienie",
+    T08: "Przyczyna źródłowa",
+    T09: "Dowody w decyzji",
+    T10: "Stopniowe odsłanianie",
+    T11: "Ekonomia kontekstu",
+    T12: "Trwała pamięć",
+    T13: "Czytaj przed edycją",
+    T14: "Przygotowanie narzędzi",
+    T15: "Ocena delegacji",
+    T16: "Dekompozycja",
+    T17: "Jakość briefu",
+    T18: "Prawa decyzyjne",
+    T19: "Higiena równoległości",
+    T20: "Integracja wyników",
+    T21: "Precyzja feedbacku",
+    T22: "Sterowanie i zaufanie",
+    T23: "Domknięcie weryfikacji",
+    T24: "Uczenie po błędach",
+  };
+
+  const score = id => {
+    const [e, a, d] = DATA.traits[id];
+    return e ? Math.round((a + d) / e * 100) : 0;
+  };
+  const mean = xs => xs.reduce((s, x) => s + x, 0) / xs.length;
+  const band = v => v >= 70 ? "var(--good)" : v >= 50 ? "var(--mid)" : "var(--low)";
+  const rad = deg => deg * Math.PI / 180;
+  const pt = (cx, cy, r, deg) => [cx + r * Math.cos(rad(deg)), cy + r * Math.sin(rad(deg))];
+  const f = n => n.toFixed(1);
+
+  const groupScores = GROUPS.map(g => ({ ...g, v: Math.round(mean(g.ids.map(score))) }));
+  const overall = Math.round(mean(Object.keys(NAMES).map(score)));
+  const tier = overall >= 75 ? ["ZŁOTO", "gold"] : overall >= 65 ? ["SREBRO", "silver"] : ["BRĄZ", "bronze"];
+
+  document.getElementById("eyebrow").textContent = DATA.date ? `MEGA Assessment · skan ${DATA.date}` : "MEGA Assessment";
+  document.getElementById("name").textContent = DATA.name;
+  document.getElementById("foot").textContent = DATA.foot;
+  document.getElementById("ovr").textContent = overall;
+  document.getElementById("tier").textContent = tier[0];
+  document.getElementById("card").classList.add(tier[1]);
+
+  const cols = [groupScores.slice(0, 3), groupScores.slice(3)];
+  document.getElementById("stats").innerHTML = cols.map(col =>
+    `<div class="col">${col.map(g => `<div class="stat"><b>${g.v}</b><span>${g.code}</span></div>`).join("")}</div>`
+  ).join("");
+
+  document.getElementById("key").innerHTML = GROUPS.map(g =>
+    `<div><dt>${g.code}</dt><dd>${g.name} <span style="color: var(--muted)">(${g.ids.join(", ")})</span></dd></div>`
+  ).join("");
+
+  // Card hexagon
+  (() => {
+    const cx = 150, cy = 136, R = 92, n = 6;
+    const ang = i => -90 + i * 360 / n;
+    const ink = "#2b170a";
+    let s = "";
+    [25, 50, 75, 100].forEach(lv => {
+      const pts = groupScores.map((_, i) => pt(cx, cy, R * lv / 100, ang(i)).map(f).join(",")).join(" ");
+      s += `<polygon points="${pts}" fill="${lv === 100 ? "rgba(43,23,10,.08)" : "none"}" stroke="${ink}" stroke-opacity="${lv === 100 ? .5 : .22}" stroke-width="1"/>`;
+    });
+    groupScores.forEach((_, i) => {
+      const [x, y] = pt(cx, cy, R, ang(i));
+      s += `<line x1="${cx}" y1="${cy}" x2="${f(x)}" y2="${f(y)}" stroke="${ink}" stroke-opacity=".22" stroke-width="1"/>`;
+    });
+    const data = groupScores.map((g, i) => pt(cx, cy, R * g.v / 100, ang(i)).map(f).join(",")).join(" ");
+    s += `<polygon points="${data}" fill="rgba(43,23,10,.34)" stroke="${ink}" stroke-width="2.2" stroke-linejoin="round"/>`;
+    groupScores.forEach((g, i) => {
+      const [x, y] = pt(cx, cy, R * g.v / 100, ang(i));
+      s += `<circle cx="${f(x)}" cy="${f(y)}" r="3.6" fill="${ink}"/>`;
+      const [lx, ly] = pt(cx, cy, R + 20, ang(i));
+      s += `<text x="${f(lx)}" y="${f(ly + 5)}" text-anchor="middle" font-family="Barlow Condensed, Arial Narrow, sans-serif" font-weight="700" font-size="15" fill="${ink}">${g.code}</text>`;
+    });
+    document.getElementById("hex").innerHTML = s;
+  })();
+
+  // Full 24-spoke radar, spokes ordered by group so each group is one shaded wedge
+  (() => {
+    const cx = 530, cy = 500, R = 318;
+    const order = GROUPS.flatMap(g => g.ids.map(id => ({ id, g: g.code })));
+    const n = order.length, step = 360 / n;
+    const ang = i => -90 + i * step;
+    let s = "";
+
+    let idx = 0;
+    GROUPS.forEach((g, gi) => {
+      const a1 = ang(idx) - step / 2, a2 = ang(idx + g.ids.length - 1) + step / 2;
+      const [x1, y1] = pt(cx, cy, R, a1), [x2, y2] = pt(cx, cy, R, a2);
+      const fill = gi % 2 === 0 ? "rgba(224,166,108,.07)" : "rgba(237,227,214,.015)";
+      s += `<path d="M${cx},${cy} L${f(x1)},${f(y1)} A${R},${R} 0 0 1 ${f(x2)},${f(y2)} Z" fill="${fill}"/>`;
+      idx += g.ids.length;
+    });
+
+    [25, 50, 75, 100].forEach(lv => {
+      s += `<circle cx="${cx}" cy="${cy}" r="${R * lv / 100}" fill="none" stroke="var(--grid)" stroke-width="1"/>`;
+      const [tx, ty] = pt(cx, cy, R * lv / 100, -90 + step / 2);
+      s += `<text x="${f(tx + 4)}" y="${f(ty + 4)}" font-size="12" font-weight="500" fill="var(--muted)">${lv}</text>`;
+    });
+    order.forEach((_, i) => {
+      const [x, y] = pt(cx, cy, R, ang(i));
+      s += `<line x1="${cx}" y1="${cy}" x2="${f(x)}" y2="${f(y)}" stroke="var(--grid)" stroke-width="1"/>`;
+    });
+
+    const data = order.map((o, i) => pt(cx, cy, R * score(o.id) / 100, ang(i)).map(f).join(",")).join(" ");
+    s += `<polygon points="${data}" fill="rgba(201,139,85,.26)" stroke="var(--line)" stroke-width="2" stroke-linejoin="round"/>`;
+
+    order.forEach((o, i) => {
+      const v = score(o.id), name = NAMES[o.id];
+      const a = ang(i);
+      const [x, y] = pt(cx, cy, R * v / 100, a);
+      s += `<circle class="pt" cx="${f(x)}" cy="${f(y)}" r="5.5" fill="${band(v)}" stroke="var(--ground)" stroke-width="2"><title>${o.id} ${name}: ${v}/100</title></circle>`;
+
+      const [lx, ly] = pt(cx, cy, R + 24, a);
+      const c = Math.cos(rad(a)), sn = Math.sin(rad(a));
+      const anchor = c > 0.2 ? "start" : c < -0.2 ? "end" : "middle";
+      const base = ly + (sn > 0.3 ? 14 : sn < -0.3 ? -12 : 0);
+      s += `<text x="${f(lx)}" y="${f(base)}" text-anchor="${anchor}" font-size="17" fill="var(--panel-ink)"><tspan font-weight="800">${v}</tspan><tspan dx="6" font-weight="500">${name}</tspan></text>`;
+      s += `<text x="${f(lx)}" y="${f(base + 17)}" text-anchor="${anchor}" font-size="12.5" font-weight="600" letter-spacing="1" fill="var(--muted)">${o.id} · ${o.g}</text>`;
+    });
+
+    document.getElementById("radar").innerHTML = s;
+  })();
+</script>
